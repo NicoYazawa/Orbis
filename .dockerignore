@@ -1,0 +1,17 @@
+.git
+.env
+.env.*
+node_modules
+**/node_modules
+**/.npm-cache
+**/.playwright
+**/.gocache*
+**/.gomodcache
+**/*.tsbuildinfo
+**/.next
+**/test-results
+**/playwright-report
+reports
+.superpowers
+backend/bin
+docs

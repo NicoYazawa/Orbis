@@ -1,0 +1,18 @@
+# Explicit local debug ports. Every port is loopback-bound and checked by start scripts.
+services:
+  postgres:
+    ports: ["127.0.0.1:${ORBIS_PG_PORT:-18432}:5432"]
+  redis:
+    ports: ["127.0.0.1:${ORBIS_REDIS_PORT:-18379}:6379"]
+  rustfs:
+    ports: ["127.0.0.1:${ORBIS_S3_PORT:-18900}:9000", "127.0.0.1:${ORBIS_S3_CONSOLE_PORT:-18901}:9001"]
+  qdrant:
+    ports: ["127.0.0.1:${ORBIS_QDRANT_PORT:-18333}:6333", "127.0.0.1:${ORBIS_QDRANT_GRPC_PORT:-18334}:6334"]
+  api:
+    ports: ["127.0.0.1:${ORBIS_API_PORT:-18081}:8080"]
+  jaeger:
+    ports: ["127.0.0.1:${ORBIS_JAEGER_PORT:-18686}:16686"]
+  prometheus:
+    ports: ["127.0.0.1:${ORBIS_PROMETHEUS_PORT:-18909}:9090"]
+  grafana:
+    ports: ["127.0.0.1:${ORBIS_GRAFANA_PORT:-18304}:3000"]

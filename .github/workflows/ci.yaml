@@ -1,0 +1,56 @@
+name: Orbis Phase 0
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+      - run: go test -race ./... -count=1
+        working-directory: backend
+      - run: go vet ./...
+        working-directory: backend
+      - run: go build ./...
+        working-directory: backend
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run typecheck && npm run lint && npm run test:unit -- --run && npm run build
+        working-directory: frontend
+  infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test --test-isolation=none scripts/ports.test.mjs
+      - run: node scripts/orbis.mjs init
+      - run: sh scripts/start-infra.sh --profiles= --no-build
+      - run: sh scripts/start-infra.sh --profiles=rag --no-build
+      - run: sh scripts/start-infra.sh --profiles=rag,obs --no-build
+      - run: sh scripts/start-infra.sh --profiles=app,rag,obs --dev
+      - run: sh scripts/verify-infra.sh
+      - run: node tests/phase0/acceptance.mjs
+      - run: node scripts/verify-observability.mjs
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: node scripts/verify-browser.mjs
+      - run: node --test --test-isolation=none scripts/start-safety.test.mjs
+      - if: always()
+        run: sh scripts/stop-infra.sh --dev

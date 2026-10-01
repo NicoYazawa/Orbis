@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "title": "Orbis Phase 0",
+  "time": {
+    "to": "now",
+    "from": "now-15m"
+  },
+  "uid": "orbis-phase0",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "请求速率",
+      "targets": [
+        {
+          "expr": "sum by (service) (rate(orbis_http_requests_total[5m]))",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "orbis-prometheus"
+      },
+      "gridPos": {
+        "w": 12,
+        "y": 0.0,
+        "x": 0,
+        "h": 8
+      },
+      "id": 1
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP P95 秒",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, service) (rate(orbis_http_request_duration_seconds_bucket[5m])))",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "orbis-prometheus"
+      },
+      "gridPos": {
+        "w": 12,
+        "y": 0.0,
+        "x": 12,
+        "h": 8
+      },
+      "id": 2
+    },
+    {
+      "type": "timeseries",
+      "title": "Go goroutines",
+      "targets": [
+        {
+          "expr": "go_goroutines",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "orbis-prometheus"
+      },
+      "gridPos": {
+        "w": 12,
+        "y": 8.0,
+        "x": 0,
+        "h": 8
+      },
+      "id": 3
+    },
+    {
+      "type": "timeseries",
+      "title": "Go 堆内存",
+      "targets": [
+        {
+          "expr": "go_memstats_heap_alloc_bytes",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "orbis-prometheus"
+      },
+      "gridPos": {
+        "w": 12,
+        "y": 8.0,
+        "x": 12,
+        "h": 8
+      },
+      "id": 4
+    }
+  ],
+  "refresh": "15s"
+}
